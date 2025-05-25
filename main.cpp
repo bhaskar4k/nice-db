@@ -5,29 +5,14 @@
 #include <ws2tcpip.h> 
 #pragma comment(lib, "ws2_32.lib") 
 #include <cstdlib>
-#include <fstream>
-#include <cstdlib>
 #include <unordered_map>
+#include "./environment/env.cpp"
 
-std::unordered_map<std::string, std::string> parseEnvFile(const std::string& path) {
-    std::unordered_map<std::string, std::string> envMap;
-    std::ifstream envFile(path);
-    std::string line;
+using namespace std;
 
-    while (std::getline(envFile, line)) {
-        size_t delimiterPos = line.find('=');
-        if (delimiterPos != std::string::npos) {
-            std::string key = line.substr(0, delimiterPos);
-            std::string value = line.substr(delimiterPos + 1);
-            envMap[key] = value;
-        }
-    }
-    return envMap;
-}
-
-void handleCommand(SOCKET clientSocket, const std::string& command) {
+void handleCommand(SOCKET clientSocket, const string& command) {
     if (command == "SAY_HELLO") {
-        std::cout << "Hello from server!" << std::endl;
+        cout << "Hello from server!" << endl;
         const char* response = "Hello executed!\n";
         send(clientSocket, response, strlen(response), 0);
     }
@@ -43,19 +28,18 @@ void handleCommand(SOCKET clientSocket, const std::string& command) {
 }
 
 int main() {
-    auto env = parseEnvFile(".env");
-    int port = std::stoi(env["PORT"]);
+    int port = ENV::PORT;
     
     // Initialize Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cout << "WSAStartup failed\n";
+        cout << "WSAStartup failed\n";
         return 1;
     }
 
     SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == INVALID_SOCKET) {
-        std::cout << "Socket creation failed: " << WSAGetLastError() << "\n";
+        cout << "Socket creation failed: " << WSAGetLastError() << "\n";
         WSACleanup();
         return 1;
     }
@@ -67,25 +51,25 @@ int main() {
 
     // Bind and listen
     if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cout << "Bind failed: " << WSAGetLastError() << "\n";
+        cout << "Bind failed: " << WSAGetLastError() << "\n";
         closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
     if (listen(serverSocket, 3) == SOCKET_ERROR) {
-        std::cout << "Listen failed: " << WSAGetLastError() << "\n";
+        cout << "Listen failed: " << WSAGetLastError() << "\n";
         closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
-    std::cout << "Server listening on port " << port << std::endl;
+    cout << "Server listening on port " << port << endl;
 
     // Accept a client
     SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
     if (clientSocket == INVALID_SOCKET) {
-        std::cout << "Accept failed: " << WSAGetLastError() << "\n";
+        cout << "Accept failed: " << WSAGetLastError() << "\n";
         closesocket(serverSocket);
         WSACleanup();
         return 1;
@@ -96,7 +80,7 @@ int main() {
     int bytesRead;
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[bytesRead] = '\0';  // Null-terminate the received data
-        std::string command(buffer);
+        string command(buffer);
         command.erase(command.find_last_not_of(" \n\r\t") + 1);  // Trim whitespace
         handleCommand(clientSocket, command);
     }
