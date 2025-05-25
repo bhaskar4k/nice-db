@@ -1,11 +1,29 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <winsock2.h>  // Windows sockets (main header)
-#include <ws2tcpip.h>  // Additional TCP/IP functions (optional)
-#pragma comment(lib, "ws2_32.lib")  // Auto-link Winsock library
+#include <winsock2.h>
+#include <ws2tcpip.h> 
+#pragma comment(lib, "ws2_32.lib") 
+#include <cstdlib>
+#include <fstream>
+#include <cstdlib>
+#include <unordered_map>
 
-#define PORT 69
+std::unordered_map<std::string, std::string> parseEnvFile(const std::string& path) {
+    std::unordered_map<std::string, std::string> envMap;
+    std::ifstream envFile(path);
+    std::string line;
+
+    while (std::getline(envFile, line)) {
+        size_t delimiterPos = line.find('=');
+        if (delimiterPos != std::string::npos) {
+            std::string key = line.substr(0, delimiterPos);
+            std::string value = line.substr(delimiterPos + 1);
+            envMap[key] = value;
+        }
+    }
+    return envMap;
+}
 
 void handleCommand(SOCKET clientSocket, const std::string& command) {
     if (command == "SAY_HELLO") {
@@ -25,6 +43,9 @@ void handleCommand(SOCKET clientSocket, const std::string& command) {
 }
 
 int main() {
+    auto env = parseEnvFile(".env");
+    int port = std::stoi(env["PORT"]);
+    
     // Initialize Winsock
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -42,7 +63,7 @@ int main() {
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(PORT);
+    serverAddr.sin_port = htons(port);
 
     // Bind and listen
     if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
@@ -59,7 +80,7 @@ int main() {
         return 1;
     }
 
-    std::cout << "Server listening on port " << PORT << std::endl;
+    std::cout << "Server listening on port " << port << std::endl;
 
     // Accept a client
     SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
