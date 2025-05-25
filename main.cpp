@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void handleCommand(SOCKET clientSocket, const string& command) {
+void handleCommand(SOCKET clientSocket, const string& command, int &ConnectedClient) {
     if (command == "SAY_HELLO") {
         cout << "Hello from server!" << endl;
         const char* response = "Hello executed!\n";
@@ -19,6 +19,9 @@ void handleCommand(SOCKET clientSocket, const string& command) {
     else if (command == "EXIT") {
         const char* response = "Server shutting down...\n";
         send(clientSocket, response, strlen(response), 0);
+        ConnectedClient--;
+        cout << "Client disconnected" << endl;
+        cout << "Concurrent connected client : " << ConnectedClient << endl;
         exit(0);
     }
     else {
@@ -28,6 +31,7 @@ void handleCommand(SOCKET clientSocket, const string& command) {
 }
 
 int main() {
+    int ConnectedClient = 0;
     int port = ENV::PORT;
     
     // Initialize Winsock
@@ -73,6 +77,10 @@ int main() {
         closesocket(serverSocket);
         WSACleanup();
         return 1;
+    }else{
+        ConnectedClient++;
+        cout << "Client connected" << endl;
+        cout << "Concurrent connected client : " << ConnectedClient << endl;
     }
 
     // Handle commands
@@ -82,7 +90,7 @@ int main() {
         buffer[bytesRead] = '\0';  // Null-terminate the received data
         string command(buffer);
         command.erase(command.find_last_not_of(" \n\r\t") + 1);  // Trim whitespace
-        handleCommand(clientSocket, command);
+        handleCommand(clientSocket, command, ConnectedClient);
     }
 
     // Cleanup
