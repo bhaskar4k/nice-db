@@ -32,6 +32,12 @@ yarn-error.log
 # Visual Studio Code
 .vs
 .vscode/*
+.vscode/
+.vscoode
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
