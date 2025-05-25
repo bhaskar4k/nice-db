@@ -20,8 +20,12 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
     cout << "Client connected. Concurrent connected clients: " << ConnectedClient << endl;
     LeaveCriticalSection(&cs);
 
+    const char* connectedResponse = "Connected to nice-db :)\n";
+    send(clientSocket, connectedResponse, strlen(connectedResponse), 0);
+
     char buffer[1024];
     int bytesRead;
+
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[bytesRead] = '\0';
         string command(buffer);
@@ -32,7 +36,7 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
             send(clientSocket, response, strlen(response), 0);
         }
         else if (command == "EXIT") {
-            const char* response = "Goodbye! Closing connection...\n";
+            const char* response = "Closing connection... Goodbye! :)\n";
             send(clientSocket, response, strlen(response), 0);
             break;
         }
