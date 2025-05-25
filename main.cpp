@@ -1,40 +1,62 @@
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <winsock2.h>
-#include <ws2tcpip.h> 
-#pragma comment(lib, "ws2_32.lib") 
-#include <cstdlib>
-#include <unordered_map>
+#include <ws2tcpip.h>
+#include <windows.h>
+#pragma comment(lib, "ws2_32.lib")
+
 #include "./environment/env.cpp"
 
 using namespace std;
 
-void handleCommand(SOCKET clientSocket, const string& command, int &ConnectedClient) {
-    if (command == "SAY_HELLO") {
-        cout << "Hello from server!" << endl;
-        const char* response = "Hello executed!\n";
-        send(clientSocket, response, strlen(response), 0);
+int ConnectedClient = 0;
+CRITICAL_SECTION cs;  // <-- WinAPI replacement for std::mutex
+
+DWORD WINAPI handleClient(LPVOID lpParam) {
+    SOCKET clientSocket = (SOCKET)lpParam;
+
+    EnterCriticalSection(&cs);
+    ConnectedClient++;
+    cout << "Client connected. Concurrent connected clients: " << ConnectedClient << endl;
+    LeaveCriticalSection(&cs);
+
+    char buffer[1024];
+    int bytesRead;
+    while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
+        buffer[bytesRead] = '\0';
+        string command(buffer);
+        command.erase(command.find_last_not_of(" \n\r\t") + 1);
+
+        if (command == "SAY_HELLO") {
+            const char* response = "Hello executed!\n";
+            send(clientSocket, response, strlen(response), 0);
+        }
+        else if (command == "EXIT") {
+            const char* response = "Goodbye! Closing connection...\n";
+            send(clientSocket, response, strlen(response), 0);
+            break;
+        }
+        else {
+            const char* response = "Unknown command\n";
+            send(clientSocket, response, strlen(response), 0);
+        }
     }
-    else if (command == "EXIT") {
-        const char* response = "Server shutting down...\n";
-        send(clientSocket, response, strlen(response), 0);
-        ConnectedClient--;
-        cout << "Client disconnected" << endl;
-        cout << "Concurrent connected client : " << ConnectedClient << endl;
-        exit(0);
-    }
-    else {
-        const char* response = "Unknown command\n";
-        send(clientSocket, response, strlen(response), 0);
-    }
+
+    closesocket(clientSocket);
+
+    EnterCriticalSection(&cs);
+    ConnectedClient--;
+    cout << "Client disconnected. Concurrent connected clients: " << ConnectedClient << endl;
+    LeaveCriticalSection(&cs);
+
+    return 0;
 }
 
 int main() {
-    int ConnectedClient = 0;
     int port = ENV::PORT;
-    
-    // Initialize Winsock
+
+    InitializeCriticalSection(&cs);  // Initialize the critical section
+
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
         cout << "WSAStartup failed\n";
@@ -53,7 +75,6 @@ int main() {
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(port);
 
-    // Bind and listen
     if (bind(serverSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
         cout << "Bind failed: " << WSAGetLastError() << "\n";
         closesocket(serverSocket);
@@ -61,7 +82,7 @@ int main() {
         return 1;
     }
 
-    if (listen(serverSocket, 3) == SOCKET_ERROR) {
+    if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
         cout << "Listen failed: " << WSAGetLastError() << "\n";
         closesocket(serverSocket);
         WSACleanup();
@@ -70,31 +91,25 @@ int main() {
 
     cout << "Server listening on port " << port << endl;
 
-    // Accept a client
-    SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
-    if (clientSocket == INVALID_SOCKET) {
-        cout << "Accept failed: " << WSAGetLastError() << "\n";
-        closesocket(serverSocket);
-        WSACleanup();
-        return 1;
-    }else{
-        ConnectedClient++;
-        cout << "Client connected" << endl;
-        cout << "Concurrent connected client : " << ConnectedClient << endl;
+    while (true) {
+        SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
+        if (clientSocket == INVALID_SOCKET) {
+            cout << "Accept failed: " << WSAGetLastError() << "\n";
+            continue;
+        }
+
+        // Create a new thread using Windows API
+        CreateThread(
+            NULL,               // default security
+            0,                  // default stack size
+            handleClient,       // thread function
+            (LPVOID)clientSocket, // parameter to thread function
+            0,                  // default creation flags
+            NULL                // no thread identifier
+        );
     }
 
-    // Handle commands
-    char buffer[1024];
-    int bytesRead;
-    while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-        buffer[bytesRead] = '\0';  // Null-terminate the received data
-        string command(buffer);
-        command.erase(command.find_last_not_of(" \n\r\t") + 1);  // Trim whitespace
-        handleCommand(clientSocket, command, ConnectedClient);
-    }
-
-    // Cleanup
-    closesocket(clientSocket);
+    DeleteCriticalSection(&cs);  // Clean up
     closesocket(serverSocket);
     WSACleanup();
     return 0;
