@@ -30,6 +30,7 @@ int ConnectedClient = 0;
 CRITICAL_SECTION cs;  // <-- WinAPI replacement for std::mutex
 
 DWORD WINAPI handleClient(LPVOID lpParam) {
+    ENV env;
     SOCKET clientSocket = (SOCKET)lpParam;
 
     EnterCriticalSection(&cs);
@@ -37,8 +38,9 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
     cout << "Client connected. Concurrent connected clients: " << ConnectedClient << "\n";
     LeaveCriticalSection(&cs);
 
-    const char* connectedResponse = "Connected to nice-db :)\n";
-    send(clientSocket, connectedResponse, strlen(connectedResponse), 0);
+    string connectedResponse = "Connected to nice-db :)\n";
+    connectedResponse += env.GetAvailableCommandsAsString() + "\n";
+    send(clientSocket, connectedResponse.c_str(), connectedResponse.length(), 0);
 
     HandleCommand(clientSocket);
 
@@ -53,7 +55,8 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
 }
 
 int main() {
-    int port = ENV::PORT;
+    ENV env;
+    int port = env.PORT;
 
     InitializeCriticalSection(&cs);  // Initialize the critical section
 
