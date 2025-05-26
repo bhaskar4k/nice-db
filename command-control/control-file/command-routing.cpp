@@ -93,7 +93,9 @@ void HandleCommand(SOCKET &clientSocket) {
             }
         }
         else if (command == "EXIT") {
-            response = "\n=========================================\n|   Closing connection... Goodbye! :)   |\n=========================================\n";
+            response = "\n=========================================\n";
+            response += "|   Closing connection... Goodbye! :)   |\n";
+            response += "=========================================\n";
             send(clientSocket, response.c_str(), response.length(), 0);
             break;
         }
