@@ -26,6 +26,7 @@ using namespace std;
 void HandleCommand(SOCKET &clientSocket) {
     char buffer[1024];
     int bytesRead;
+    string response;
 
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[bytesRead] = '\0';
@@ -38,8 +39,8 @@ void HandleCommand(SOCKET &clientSocket) {
             int table_columns = 0;
 
             // Ask for table name
-            const char* namePrompt = "Table Name: ";
-            send(clientSocket, namePrompt, strlen(namePrompt), 0);
+            response = "Table Name: ";
+            send(clientSocket, response.c_str(), response.length(), 0);
 
             bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
             if (bytesRead > 0) {
@@ -48,51 +49,57 @@ void HandleCommand(SOCKET &clientSocket) {
                 name.erase(name.find_last_not_of(" \n\r\t") + 1);
                 table_name = name;
 
-                // Ask for column count
-                const char* colPrompt = "Table Columns: ";
-                send(clientSocket, colPrompt, strlen(colPrompt), 0);
-
-                bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
-                if (bytesRead > 0) {
-                    buffer[bytesRead] = '\0';
-                    string columnStr(buffer);
-                    columnStr.erase(columnStr.find_last_not_of(" \n\r\t") + 1);
-
-                    try {
-                        table_columns = stoi(columnStr);
-                    } catch (...) {
-                        got_all_info_to_create_a_table = false;
-                        const char* err = "Invalid column count.\n";
-                        send(clientSocket, err, strlen(err), 0);
-                    }
-                } else {
+                if(table_name.empty()) {
                     got_all_info_to_create_a_table = false;
-                    const char* err = "No column count received.\n";
-                    send(clientSocket, err, strlen(err), 0);
-                }
+                    response = "Table name cannot be empty.\n";
+                    send(clientSocket, response.c_str(), response.length(), 0);
+                }else{
+                    // Ask for column count
+                    response = "Table Columns: ";
+                    send(clientSocket, response.c_str(), response.length(), 0);
+
+                    bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+                    if (bytesRead > 0) {
+                        buffer[bytesRead] = '\0';
+                        string columnStr(buffer);
+                        columnStr.erase(columnStr.find_last_not_of(" \n\r\t") + 1);
+
+                        try {
+                            table_columns = stoi(columnStr);
+                        } catch (...) {
+                            got_all_info_to_create_a_table = false;
+                            response = "Invalid column count.\n";
+                            send(clientSocket, response.c_str(), response.length(), 0);
+                        }
+                    } else {
+                        got_all_info_to_create_a_table = false;
+                        response = "No column count received.\n";
+                        send(clientSocket, response.c_str(), response.length(), 0);
+                    }
+                }      
             } else {
                 got_all_info_to_create_a_table = false;
-                const char* err = "No table name received.\n";
-                send(clientSocket, err, strlen(err), 0);
+                response = "No table name received.\n";
+                send(clientSocket, response.c_str(), response.length(), 0);
             }
 
             // Final response
             if (got_all_info_to_create_a_table) {
-                string response = "A Nice table [" + table_name + "] is created with [" + to_string(table_columns) + "] columns.\n";
+                response = "A Nice table [" + table_name + "] is created with [" + to_string(table_columns) + "] columns.\n";
                 send(clientSocket, response.c_str(), response.length(), 0);
             } else {
-                const char* response = "Didn't get all necessary data to create a nice table.\n";
-                send(clientSocket, response, strlen(response), 0);
+                response = "Didn't get all necessary data to create a nice table.\n";
+                send(clientSocket, response.c_str(), response.length(), 0);
             }
         }
         else if (command == "EXIT") {
-            const char* response = "Closing connection... Goodbye! :)\n";
-            send(clientSocket, response, strlen(response), 0);
+            response = "Closing connection... Goodbye! :)\n";
+            send(clientSocket, response.c_str(), response.length(), 0);
             break;
         }
         else {
-            const char* response = "Invalid command. Available commands: [CREATE, EXIT]\n";
-            send(clientSocket, response, strlen(response), 0);
+            response = "Invalid command. Available commands: [CREATE, EXIT]\n";
+            send(clientSocket, response.c_str(), response.length(), 0);
         }
     }
 }
