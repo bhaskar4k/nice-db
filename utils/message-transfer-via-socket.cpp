@@ -23,6 +23,6 @@
 
 using namespace std;
 
-void Transfer(SOCKET &clientSocket, string &message) {
+void SendMessage(SOCKET &clientSocket, string message) {
     send(clientSocket, message.c_str(), message.length(), 0);
 }

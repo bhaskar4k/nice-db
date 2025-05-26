@@ -10,6 +10,6 @@ using namespace std;
     #include <sys/socket.h> 
 #endif
 
-void Transfer(SOCKET &clientSocket, string &message);
+void SendMessage(SOCKET &clientSocket, string message);
 
 #endif
