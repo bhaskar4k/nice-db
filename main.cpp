@@ -1,13 +1,30 @@
 #include <iostream>
 #include <string>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <windows.h>
-#pragma comment(lib, "ws2_32.lib")
+
+#ifdef _WIN32 // For Win-like systems if needed
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+    #pragma comment(lib, "ws2_32.lib")
+#else // For Unix-like systems if needed
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <netdb.h>
+
+    typedef int SOCKET;
+    #define INVALID_SOCKET -1
+    #define SOCKET_ERROR -1
+    #define closesocket close
+#endif
 
 #include "./environment/env.cpp"
+#include "../include/db/command-control.hpp"
 
 using namespace std;
+
 
 int ConnectedClient = 0;
 CRITICAL_SECTION cs;  // <-- WinAPI replacement for std::mutex
@@ -17,40 +34,19 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
 
     EnterCriticalSection(&cs);
     ConnectedClient++;
-    cout << "Client connected. Concurrent connected clients: " << ConnectedClient << endl;
+    cout << "Client connected. Concurrent connected clients: " << ConnectedClient << "\n";
     LeaveCriticalSection(&cs);
 
     const char* connectedResponse = "Connected to nice-db :)\n";
     send(clientSocket, connectedResponse, strlen(connectedResponse), 0);
 
-    char buffer[1024];
-    int bytesRead;
-
-    while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
-        buffer[bytesRead] = '\0';
-        string command(buffer);
-        command.erase(command.find_last_not_of(" \n\r\t") + 1);
-
-        if (command == "SAY_HELLO") {
-            const char* response = "Hello executed!\n";
-            send(clientSocket, response, strlen(response), 0);
-        }
-        else if (command == "EXIT") {
-            const char* response = "Closing connection... Goodbye! :)\n";
-            send(clientSocket, response, strlen(response), 0);
-            break;
-        }
-        else {
-            const char* response = "Unknown command\n";
-            send(clientSocket, response, strlen(response), 0);
-        }
-    }
+    HandleCommand(clientSocket);
 
     closesocket(clientSocket);
 
     EnterCriticalSection(&cs);
     ConnectedClient--;
-    cout << "Client disconnected. Concurrent connected clients: " << ConnectedClient << endl;
+    cout << "Client disconnected. Concurrent connected clients: " << ConnectedClient << "\n";
     LeaveCriticalSection(&cs);
 
     return 0;
@@ -98,7 +94,7 @@ int main() {
     while (true) {
         SOCKET clientSocket = accept(serverSocket, nullptr, nullptr);
         if (clientSocket == INVALID_SOCKET) {
-            cout << "Accept failed: " << WSAGetLastError() << "\n";
+            cout << "Client accept failed: " << WSAGetLastError() << "\n";
             continue;
         }
 
