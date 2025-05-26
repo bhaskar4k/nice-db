@@ -1,4 +1,4 @@
-#include "../../header-file/db/command-control.hpp"
+#include "../header-file/command-routing.hpp"
 
 #include <iostream>
 #include <string>
@@ -33,8 +33,22 @@ void HandleCommand(SOCKET &clientSocket) {
         command.erase(command.find_last_not_of(" \n\r\t") + 1);
 
         if (command == "SAY_HELLO") {
-            const char* response = "Hello executed!\n";
-            send(clientSocket, response, strlen(response), 0);
+            const char* prompt = "Enter your name: ";
+            send(clientSocket, prompt, strlen(prompt), 0);
+
+            // Receive the name from the client
+            bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+            if (bytesRead > 0) {
+                buffer[bytesRead] = '\0';
+                string name(buffer);
+                name.erase(name.find_last_not_of(" \n\r\t") + 1);
+
+                string response = "Hello, " + name + "!\n";
+                send(clientSocket, response.c_str(), response.length(), 0);
+            } else {
+                const char* error = "No name received.\n";
+                send(clientSocket, error, strlen(error), 0);
+            }
         }
         else if (command == "EXIT") {
             const char* response = "Closing connection... Goodbye! :)\n";
