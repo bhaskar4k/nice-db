@@ -9,4 +9,4 @@
 
 void HandleCommand(SOCKET &clientSocket);
 
-#endif // COMMAND_CONTROL_HEADER
+#endif
