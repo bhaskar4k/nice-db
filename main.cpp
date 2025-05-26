@@ -38,7 +38,7 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
     cout << "Client connected. Concurrent connected clients: " << ConnectedClient << "\n";
     LeaveCriticalSection(&cs);
 
-    string connectedResponse = "Connected to nice-db :)\n";
+    string connectedResponse = "\n=========================================\n|        Connected to Nice-DB :)        |\n=========================================\n\n";
     connectedResponse += env.GetAvailableCommandsAsString() + "\n";
     send(clientSocket, connectedResponse.c_str(), connectedResponse.length(), 0);
 
