@@ -27,6 +27,7 @@ using namespace std;
 
 
 int ConnectedClient = 0;
+string respone;
 CRITICAL_SECTION cs;  // <-- WinAPI replacement for std::mutex
 
 DWORD WINAPI handleClient(LPVOID lpParam) {
@@ -38,9 +39,12 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
     cout << "Client connected. Concurrent connected clients: " << ConnectedClient << "\n";
     LeaveCriticalSection(&cs);
 
-    string connectedResponse = "\n=========================================\n|        Connected to Nice-DB :)        |\n=========================================\n\n";
-    connectedResponse += env.GetAvailableCommandsAsString() + "\n";
-    send(clientSocket, connectedResponse.c_str(), connectedResponse.length(), 0);
+    respone = "\n=========================================\n";
+    respone += "|        Connected to Nice-DB :)        |";
+    respone += "\n=========================================\n\n";
+
+    respone += env.GetAvailableCommandsAsString() + "\n";
+    send(clientSocket, respone.c_str(), respone.length(), 0);
 
     HandleCommand(clientSocket);
 
