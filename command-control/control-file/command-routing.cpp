@@ -23,12 +23,15 @@
     #define closesocket close
 #endif
 
+#include "../../environment/env.cpp"
+
 using namespace std;
 
 void HandleCommand(SOCKET &clientSocket) {
     char buffer[1024];
     int bytesRead;
     string response;
+    ENV env;
 
     while ((bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0)) > 0) {
         buffer[bytesRead] = '\0';
@@ -46,7 +49,7 @@ void HandleCommand(SOCKET &clientSocket) {
             break;
         }
         else {
-            SendMessage(clientSocket, "Invalid command. Available commands: [CREATE, EXIT]\n");
+            SendMessage(clientSocket, "Invalid command. " + env.GetAvailableCommandsAsString() + "\n");
         }
     }
 }
