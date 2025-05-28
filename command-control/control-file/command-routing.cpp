@@ -42,9 +42,9 @@ void HandleCommand(SOCKET &clientSocket) {
             HandleCreateTableCommand(clientSocket);
         }
         else if (command == "EXIT") {
-            response = "\n=========================================\n";
-            response += "|   Closing connection... Goodbye! :)   |\n";
-            response += "=========================================\n";
+            response = "\n=====================================================\n";
+            response += "|         Closing connection... Goodbye! :)         |\n";
+            response += "=====================================================\n";
             SendMessage(clientSocket, response);
             break;
         }
