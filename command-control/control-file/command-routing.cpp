@@ -39,7 +39,17 @@ void HandleCommand(SOCKET &clientSocket) {
         command.erase(command.find_last_not_of(" \n\r\t") + 1);
 
         if (command == "CREATE") {
+            response = "\n=========================================\n";
+            response += "|     Let's create a nice table! :)     |\n";
+            response += "=========================================\n\n";
+            SendMessage(clientSocket, response);
+
             HandleCreateTableCommand(clientSocket);
+
+            response = "\n=========================================\n";
+            response += "|      A nice table is created! :)      |\n";
+            response += "=========================================\n";
+            SendMessage(clientSocket, response);
         }
         else if (command == "EXIT") {
             response = "\n=========================================\n";
