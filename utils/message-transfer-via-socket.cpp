@@ -23,6 +23,11 @@
 
 using namespace std;
 
+void PrintEmptyLine(SOCKET &clientSocket) {
+    string message = "\n";
+    SendMessage(clientSocket, message);
+}
+
 void SendMessage(SOCKET &clientSocket, string message) {
     send(clientSocket, message.c_str(), message.length(), 0);
 }

@@ -10,6 +10,7 @@ using namespace std;
     #include <sys/socket.h> 
 #endif
 
+void PrintEmptyLine(SOCKET &clientSocket);
 void SendMessage(SOCKET &clientSocket, string message);
 
 #endif

@@ -41,6 +41,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
         buffer[bytesRead] = '\0';
         string name(buffer);
         name.erase(name.find_last_not_of(" \n\r\t") + 1);
+        PrintEmptyLine(clientSocket);
 
         if (name.empty()) {
             got_all_info_to_create_a_table = false;
@@ -57,6 +58,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
                 try {
                     int table_columns = stoi(columnStr);
                     new_table = TableStructure(name, table_columns);
+                    PrintEmptyLine(clientSocket);
 
                     int i=0;
                     while (i < table_columns) {
@@ -78,6 +80,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
 
                                 if (columnType == "int" || columnType == "double" || columnType == "string" || columnType == "datetime") {
                                     new_table.table_column_info[i++] = ColumnStructure(columnName, columnType);
+                                    PrintEmptyLine(clientSocket);
                                 } else {
                                     SendMessage(clientSocket, "Invalid column type.\n");
                                 }
