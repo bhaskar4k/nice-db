@@ -7,7 +7,7 @@ using namespace std;
 class ENV {
 public:
     const int PORT = 69;
-    const vector<string> AVAILABLE_COMMANDS = {"CREATE", "EXIT"};
+    const vector<string> AVAILABLE_COMMANDS = {"COMMANDS", "CREATE", "EXIT"};
 
     string GetAvailableCommandsAsString() {
         string response = "Available commands: [";

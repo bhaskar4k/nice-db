@@ -41,6 +41,9 @@ void HandleCommand(SOCKET &clientSocket) {
         if (command == "CREATE") {
             HandleCreateTableCommand(clientSocket);
         }
+        else if (command == "COMMANDS") {
+            SendMessage(clientSocket, env.GetAvailableCommandsAsString() + "\n\n");
+        }
         else if (command == "EXIT") {
             response = "\n=====================================================\n";
             response += "|         Closing connection... Goodbye! :)         |\n";
