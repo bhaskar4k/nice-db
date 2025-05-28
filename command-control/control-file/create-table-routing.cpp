@@ -87,13 +87,13 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
                                     new_table.table_column_info[i++] = ColumnStructure(columnName, columnType);
                                     PrintEmptyLine(clientSocket);
                                 } else {
-                                    SendMessage(clientSocket, "Invalid column type.\n");
+                                    SendMessage(clientSocket, "Invalid column type.\n\n");
                                 }
                             } else {
-                                SendMessage(clientSocket, "No column type recieved.\n");
+                                SendMessage(clientSocket, "No column type recieved.\n\n");
                             }
                         } else {
-                            SendMessage(clientSocket, "No column name recieved.\n");
+                            SendMessage(clientSocket, "No column name recieved.\n\n");
                         }
                     }
                 } catch (...) {
