@@ -23,6 +23,16 @@
 
 using namespace std;
 
+bool SafeReceiveMessage(SOCKET &sock, char *buffer, int bufsize, int &bytesRead) {
+    bytesRead = recv(sock, buffer, bufsize - 1, 0);
+    if (bytesRead == 0 || bytesRead == SOCKET_ERROR) {
+        return false;
+    } 
+    
+    buffer[bytesRead] = '\0';
+    return true;
+}
+
 void PrintEmptyLine(SOCKET &clientSocket) {
     string message = "\n";
     SendMessage(clientSocket, message);

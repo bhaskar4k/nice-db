@@ -10,6 +10,7 @@ using namespace std;
     #include <sys/socket.h> 
 #endif
 
+bool SafeReceiveMessage(SOCKET &sock, char *buffer, int bufsize, int &bytesRead);
 void PrintEmptyLine(SOCKET &clientSocket);
 void SendMessage(SOCKET &clientSocket, string message);
 

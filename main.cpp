@@ -43,7 +43,7 @@ DWORD WINAPI handleClient(LPVOID lpParam) {
     respone += "|        Connected to Nice-DB :)        |";
     respone += "\n=========================================\n\n";
 
-    respone += env.GetAvailableCommandsAsString() + "\n";
+    respone += env.GetAvailableCommandsAsString() + "\n\n";
     send(clientSocket, respone.c_str(), respone.length(), 0);
 
     HandleCommand(clientSocket);

@@ -30,12 +30,17 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     char buffer[1024];
     int bytesRead;
     string response;
+
+    response = "\n=========================================\n";
+    response += "|     Let's create a nice table! :)     |\n";
+    response += "=========================================\n\n";
+    SendMessage(clientSocket, response);
     
     bool got_all_info_to_create_a_table = true;
     TableStructure new_table;
 
     SendMessage(clientSocket, "Table Name: ");
-    bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+    if (!SafeReceiveMessage(clientSocket, buffer, sizeof(buffer), bytesRead)) return;
 
     if (bytesRead > 0) {
         buffer[bytesRead] = '\0';
@@ -48,7 +53,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
             SendMessage(clientSocket, "Table name cannot be empty.\n");
         } else {
             SendMessage(clientSocket, "Table Columns: ");
-            bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+            if (!SafeReceiveMessage(clientSocket, buffer, sizeof(buffer), bytesRead)) return;
 
             if (bytesRead > 0) {
                 buffer[bytesRead] = '\0';
@@ -63,7 +68,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
                     int i=0;
                     while (i < table_columns) {
                         SendMessage(clientSocket, "Column-" + to_string(i+1) + " Name: ");
-                        bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+                        if (!SafeReceiveMessage(clientSocket, buffer, sizeof(buffer), bytesRead)) return;
 
                         if (bytesRead > 0) {
                             buffer[bytesRead] = '\0';
@@ -71,7 +76,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
                             columnName.erase(columnName.find_last_not_of(" \n\r\t") + 1);
 
                             SendMessage(clientSocket, "Column-" + to_string(i+1) + " Type: ");
-                            bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+                            if (!SafeReceiveMessage(clientSocket, buffer, sizeof(buffer), bytesRead)) return;
 
                             if (bytesRead > 0) {
                                 buffer[bytesRead] = '\0';
@@ -108,7 +113,16 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     if (got_all_info_to_create_a_table) {
         response = "A Nice table [" + new_table.table_name + "] is created with [" + to_string(new_table.table_columns) + "] columns.\n";
         SendMessage(clientSocket, response);
+
+        response = "\n=========================================\n";
+        response += "|      A nice table is created! :)      |\n";
+        response += "=========================================\n\n";
+        SendMessage(clientSocket, response);     
     } else {
         SendMessage(clientSocket, "Didn't get all necessary data to create a nice table.\n");
+        response = "\n=========================================\n";
+        response += "|    Failed creating a nice table :)    |\n";
+        response += "=========================================\n\n";
+        SendMessage(clientSocket, response); 
     }
 }
