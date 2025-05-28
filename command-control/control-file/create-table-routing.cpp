@@ -22,7 +22,7 @@ typedef int SOCKET;
 #define closesocket close
 #endif
 
-#include "../../model/table-structure.cpp"
+#include "../../src/header-file/create-table.hpp"
 
 using namespace std;
 
@@ -113,6 +113,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     if (got_all_info_to_create_a_table) {
         response = "A Nice table [" + new_table.table_name + "] is created with [" + to_string(new_table.table_columns) + "] columns.\n";
         SendMessage(clientSocket, response);
+        BuildTable(new_table);
 
         response = "\n=========================================\n";
         response += "|      A nice table is created! :)      |\n";
