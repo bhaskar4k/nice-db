@@ -32,8 +32,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     string response;
     
     bool got_all_info_to_create_a_table = true;
-    string table_name = "";
-    int table_columns = 0;
+    TableStructure new_table;
 
     SendMessage(clientSocket, "Table Name: ");
     bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
@@ -42,23 +41,22 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
         buffer[bytesRead] = '\0';
         string name(buffer);
         name.erase(name.find_last_not_of(" \n\r\t") + 1);
-        table_name = name;
 
-        if (table_name.empty()) {
+        if (name.empty()) {
             got_all_info_to_create_a_table = false;
             SendMessage(clientSocket, "Table name cannot be empty.\n");
         } else {
             SendMessage(clientSocket, "Table Columns: ");
-
             bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+
             if (bytesRead > 0) {
                 buffer[bytesRead] = '\0';
                 string columnStr(buffer);
                 columnStr.erase(columnStr.find_last_not_of(" \n\r\t") + 1);
 
                 try {
-                    table_columns = stoi(columnStr);
-                    TableStructure new_table(table_name, table_columns);
+                    int table_columns = stoi(columnStr);
+                    new_table = TableStructure(name, table_columns);
 
                     int i=0;
                     while (i < table_columns) {
@@ -105,7 +103,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     }
 
     if (got_all_info_to_create_a_table) {
-        response = "A Nice table [" + table_name + "] is created with [" + to_string(table_columns) + "] columns.\n";
+        response = "A Nice table [" + new_table.table_name + "] is created with [" + to_string(new_table.table_columns) + "] columns.\n";
         SendMessage(clientSocket, response);
     } else {
         SendMessage(clientSocket, "Didn't get all necessary data to create a nice table.\n");

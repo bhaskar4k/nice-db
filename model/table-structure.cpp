@@ -12,6 +12,8 @@ public:
     int table_columns;
     vector<ColumnStructure> table_column_info;
 
+    TableStructure() {}
+
     TableStructure(string name, int columns) {
         this->table_name = name;
         this->table_columns = columns;
