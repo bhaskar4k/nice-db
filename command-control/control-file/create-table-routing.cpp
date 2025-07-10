@@ -5,24 +5,25 @@
 #include <string>
 
 #ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <windows.h>
-#pragma comment(lib, "ws2_32.lib")
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <windows.h>
+    #pragma comment(lib, "ws2_32.lib")
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <netdb.h>
-typedef int SOCKET;
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
-#define closesocket close
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <netdb.h>
+    typedef int SOCKET;
+    #define INVALID_SOCKET -1
+    #define SOCKET_ERROR -1
+    #define closesocket close
 #endif
 
 #include "../../src/header-file/create-table.hpp"
+#include "../../src/header-file/read-table.hpp"
 
 using namespace std;
 
@@ -113,12 +114,21 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
     if (got_all_info_to_create_a_table) {
         response = "A Nice table [" + new_table.table_name + "] is created with [" + to_string(new_table.table_columns) + "] columns.\n";
         SendMessage(clientSocket, response);
-        BuildTable(new_table);
 
-        response = "\n=========================================\n";
-        response += "|      A nice table is created! :)      |\n";
-        response += "=========================================\n\n";
-        SendMessage(clientSocket, response);     
+        if(BuildTable(new_table)){
+            ReadTable(new_table.table_name);
+
+            response = "\n=========================================\n";
+            response += "|      A nice table is created! :)      |\n";
+            response += "=========================================\n\n";
+            SendMessage(clientSocket, response);
+        } else {
+            SendMessage(clientSocket, "Didn't get all necessary data to create a nice table.\n");
+            response = "\n=========================================\n";
+            response += "|    Failed creating a nice table :)    |\n";
+            response += "=========================================\n\n";
+            SendMessage(clientSocket, response); 
+        }    
     } else {
         SendMessage(clientSocket, "Didn't get all necessary data to create a nice table.\n");
         response = "\n=========================================\n";
