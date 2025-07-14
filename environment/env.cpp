@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -14,6 +15,9 @@ public:
 
     // FileSystem
     const string TABLE_DATA_STORE_FOLDER = "tables";
+
+    // DataType
+    const set<string> DATA_TYPES{"int", "double", "string", "datetime", "bool", "char", "long", "long long", "unsigned short", "unsigned int", "unsigned long", "unsigned long long"};
 
     string GetAvailableCommandsAsString() {
         string response = "Available commands: [";

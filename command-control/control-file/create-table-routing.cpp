@@ -24,10 +24,12 @@
 
 #include "../../src/header-file/create-table.hpp"
 #include "../../src/header-file/read-table.hpp"
+#include "../../environment/env.cpp"
 
 using namespace std;
 
 void HandleCreateTableCommand(SOCKET &clientSocket){
+    ENV env;
     char buffer[1024];
     int bytesRead;
     string response;
@@ -84,7 +86,7 @@ void HandleCreateTableCommand(SOCKET &clientSocket){
                                 string columnType(buffer);
                                 columnType.erase(columnType.find_last_not_of(" \n\r\t") + 1);
 
-                                if (columnType == "int" || columnType == "double" || columnType == "string" || columnType == "datetime") {
+                                if (env.DATA_TYPES.find(columnType) != env.DATA_TYPES.end()) {
                                     new_table.table_column_info[i++] = ColumnStructure(columnName, columnType);
                                     PrintEmptyLine(clientSocket);
                                 } else {
