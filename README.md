@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="extra/logo/nice_db_logo.png" alt="NICE-DB Logo" width="200">
+</div>
+
 # 🚀 NICE-DB: High-Performance Data Ingestion Engine
 
 > A modern, asynchronous data ingestion platform built with **FastAPI** and **Delta Lake** for large-scale data processing and storage.
