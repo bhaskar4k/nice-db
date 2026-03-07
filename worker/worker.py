@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 import threading
 from threading import Lock, Semaphore
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -5,13 +10,18 @@ from apscheduler.triggers.interval import IntervalTrigger
 from app.logger import logger
 from ingestion.worker_logic import process_job, fetch_pending_job
 import atexit
+from app.utils.config import load_config
 
-# Thread-safe locks and semaphores to prevent deadlock
+CONFIG = load_config()
+
+MAX_CONCURRENT_JOB = CONFIG["threading"]["max_parallel_workers"]
+
+
 job_lock = Lock()
-max_concurrent_jobs = Semaphore(3)  # Allow max 3 concurrent jobs
+max_concurrent_jobs = Semaphore(MAX_CONCURRENT_JOB)
 scheduler_lock = Lock()
 
-# Track active jobs to prevent race conditions
+
 active_jobs = set()
 
 
@@ -89,6 +99,7 @@ def start_scheduler(interval_seconds=30):
         )
         
         scheduler.start()
+        print(f"Scheduler started - job runs every {interval_seconds} seconds")
         logger.info(f"Scheduler started - job runs every {interval_seconds} seconds")
         
         # Gracefully shutdown scheduler on exit
@@ -102,6 +113,7 @@ def start_scheduler(interval_seconds=30):
 
 
 if __name__ == "__main__":
+    print("Starting worker with cron scheduler")
     logger.info("Starting worker with cron scheduler")
     scheduler = start_scheduler(interval_seconds=30)  # Run every 30 seconds
     

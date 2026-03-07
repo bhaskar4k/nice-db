@@ -17,5 +17,8 @@
   "server": {
     "host": "127.0.0.1",
     "port": 8000
+  },
+  "threading": {
+    "max_parallel_workers": 5
   }
 }
