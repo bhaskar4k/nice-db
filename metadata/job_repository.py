@@ -6,9 +6,9 @@ def create_job(table_name, file_path):
     job_id = "abcd"
 
     query = """
-    INSERT INTO ingestion_jobs
-    (job_id, table_name, file_path, status)
-    VALUES (?, ?, ?, 'pending')
+        INSERT INTO ingestion_jobs
+        (job_id, table_name, file_path, status)
+        VALUES (?, ?, ?, 'pending')
     """
 
     conn = get_connection()
