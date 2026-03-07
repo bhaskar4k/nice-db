@@ -1,5 +1,5 @@
 from storage.delta_writer import write_delta
-from polars import pl
+import polars as pl
 
 
 def fetch_pending_job():
