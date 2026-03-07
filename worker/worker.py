@@ -15,6 +15,7 @@ from app.utils.config import load_config
 CONFIG = load_config()
 
 MAX_CONCURRENT_JOB = CONFIG["threading"]["max_parallel_workers"]
+JOB_FETCH_INTERVAL = CONFIG["threading"]["job_fetch_interval_seconds"]
 
 
 job_lock = Lock()
@@ -83,15 +84,15 @@ def cron_job():
         logger.exception(f"Error in cron job: {str(e)}")
 
 
-def start_scheduler(interval_seconds=30):
+def start_scheduler():
     """Start the background scheduler with cron job"""
     try:
         scheduler = BackgroundScheduler()
         
-        # Add job with interval trigger (runs every interval_seconds)
+        # Add job with interval trigger (runs every JOB_FETCH_INTERVAL seconds)
         scheduler.add_job(
             cron_job,
-            trigger=IntervalTrigger(seconds=interval_seconds),
+            trigger=IntervalTrigger(seconds=JOB_FETCH_INTERVAL),
             id='ingest_cron_job',
             name='Ingestion Cron Job',
             replace_existing=True,
@@ -99,8 +100,8 @@ def start_scheduler(interval_seconds=30):
         )
         
         scheduler.start()
-        print(f"Scheduler started - job runs every {interval_seconds} seconds")
-        logger.info(f"Scheduler started - job runs every {interval_seconds} seconds")
+        print(f"Scheduler started - job runs every {JOB_FETCH_INTERVAL} seconds")
+        logger.info(f"Scheduler started - job runs every {JOB_FETCH_INTERVAL} seconds")
         
         # Gracefully shutdown scheduler on exit
         atexit.register(lambda: scheduler.shutdown())
@@ -110,17 +111,3 @@ def start_scheduler(interval_seconds=30):
     except Exception as e:
         logger.exception(f"Failed to start scheduler: {str(e)}")
         raise
-
-
-if __name__ == "__main__":
-    print("Starting worker with cron scheduler")
-    logger.info("Starting worker with cron scheduler")
-    scheduler = start_scheduler(interval_seconds=30)  # Run every 30 seconds
-    
-    # Keep the main thread alive
-    try:
-        while True:
-            threading.Event().wait(1)
-    except KeyboardInterrupt:
-        logger.info("Worker shutdown requested")
-        scheduler.shutdown()

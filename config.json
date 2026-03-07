@@ -19,6 +19,7 @@
     "port": 8000
   },
   "threading": {
-    "max_parallel_workers": 5
+    "max_parallel_workers": 5,
+    "job_fetch_interval_seconds": 30
   }
 }

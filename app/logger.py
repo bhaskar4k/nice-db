@@ -12,7 +12,7 @@ LOGS_DIR = BASE_DIR / CONFIG["logging"]["log_dir"]
 LOGS_DIR.mkdir(exist_ok=True)
 
 # Logger configuration
-LOG_FILE = LOGS_DIR / "app.txt"
+LOG_FILE = LOGS_DIR / "log.txt"
 EXCEPTION_LOG_FILE = LOGS_DIR / "exceptions.txt"
 
 # Get logging config values

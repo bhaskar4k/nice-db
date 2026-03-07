@@ -1,7 +1,9 @@
 from app.app import create_app
 from app.logger import logger
 from app.utils.config import load_config
+from worker.worker import start_scheduler
 import uvicorn
+import threading
 
 # Load configuration
 try:
@@ -20,6 +22,17 @@ except Exception as e:
 
 if __name__ == "__main__":
     try:
+        # Start worker scheduler in background thread
+        print("Starting worker scheduler in background")
+        logger.info("Starting worker scheduler in background")
+
+        scheduler = start_scheduler()
+
+        print("Worker scheduler started in background")
+        logger.info("Worker scheduler started in background")
+        
+
+        # Start API server
         HOST = CONFIG["server"]["host"]
         PORT = CONFIG["server"]["port"]
         DEBUG = CONFIG["app"]["debug"]
