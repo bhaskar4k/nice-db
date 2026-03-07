@@ -173,12 +173,10 @@ FastAPI provides automatic interactive API documentation:
 **Response:**
 ```json
 {
-  "status": 200,
-  "success": true,
-  "message": "Ingestion job created successfully",
-  "data": {
-    "job_id": 12345
-  }
+    "status": 200,
+    "success": true,
+    "message": "Ingestion job created successfully",
+    "data": true
 }
 ```
 
