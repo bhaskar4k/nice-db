@@ -182,34 +182,6 @@ FastAPI provides automatic interactive API documentation:
 
 ---
 
-## 🔧 Development
-
-### Development Requirements
-
-```bash
-pip install pytest pytest-cov black flake8
-```
-
-### Code Quality
-
-**Format Code:**
-```bash
-black .
-```
-
-**Lint Code:**
-```bash
-flake8 .
-```
-
-### Running Tests
-
-```bash
-pytest tests/ -v --cov=app
-```
-
----
-
 ## 💡 Contributing
 
 Contributions are welcome! Please follow these steps:
