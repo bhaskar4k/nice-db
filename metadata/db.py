@@ -1,27 +1,50 @@
 import sqlite3
-from app.config import DB_PATH
+import json
+from pathlib import Path
+from app.logger import logger
+
+
+# Load config from JSON
+BASE_DIR = Path(__file__).resolve().parent.parent
+CONFIG_FILE = BASE_DIR / "config.json"
+
+with open(CONFIG_FILE, 'r') as f:
+    CONFIG = json.load(f)
+
+DB_PATH = BASE_DIR / CONFIG["database"]["path"]
 
 
 def get_connection():
-    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-    return conn
+    try:
+        conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
+        logger.debug(f"Database connection established: {DB_PATH}")
+        return conn
+    except Exception as e:
+        logger.exception(f"Failed to connect to database at {DB_PATH}")
+        raise
 
 
 def init_db():
-    conn = get_connection()
+    try:
+        conn = get_connection()
 
-    conn.execute(
-    """
-        CREATE TABLE IF NOT EXISTS ingestion_jobs (
-            job_id TEXT PRIMARY KEY,
-            table_name TEXT,
-            file_path TEXT,
-            status TEXT,
-            rows_processed INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        conn.execute(
+        """
+            CREATE TABLE IF NOT EXISTS ingestion_jobs (
+                job_id TEXT PRIMARY KEY,
+                table_name TEXT,
+                file_path TEXT,
+                status TEXT,
+                rows_processed INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """
         )
-    """
-    )
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
+        logger.info("Database initialized successfully")
+        
+    except Exception as e:
+        logger.exception("Failed to initialize database")
+        raise
