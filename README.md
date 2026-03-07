@@ -166,7 +166,7 @@ FastAPI provides automatic interactive API documentation:
 ```json
 {
   "table": "target_table_name",
-  "path": "/path/to/data/file.csv"
+  "path": "/path/to/data/file.excel/csv/parquet/txt"
 }
 ```
 
