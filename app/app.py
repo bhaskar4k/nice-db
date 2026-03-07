@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from app.routes.ingest_routes import router as ingest_router
 from app.routes.health_routes import router as health_router
-from metadata.db import init_db
+from repository.db import init_db
 from app.logger import logger
 
 # Load configuration
@@ -17,7 +17,7 @@ with open(CONFIG_FILE, 'r') as f:
 def create_app():
     try:
         logger.info("Creating application")
-        
+
         init_db()
         
         app = FastAPI(
