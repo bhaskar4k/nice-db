@@ -16,15 +16,15 @@ def create_ingestion_job(payload: IngestionRequest):
         raise
 
 
-def get_all_jobs():
+def get_all_ingestion_jobs():
     try:
-        logger.info("get_all_jobs -> start")
+        logger.info("get_all_ingestion_jobs -> start")
         
         jobs = get_all()
         
-        logger.info(f"get_all_jobs -> end")
+        logger.info(f"get_all_ingestion_jobs -> end")
         return jobs
     
     except Exception as e:
-        logger.exception(f"get_all_jobs -> error: {str(e)}")
+        logger.exception(f"get_all_ingestion_jobs -> error: {str(e)}")
         raise
