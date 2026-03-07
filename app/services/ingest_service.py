@@ -9,7 +9,7 @@ def create_ingestion_job(payload: IngestionRequest):
         job_id = create(payload)
         
         logger.info(f"Ingestion job created successfully with ID: {job_id}")
-        return job_id
+        return True
         
     except Exception as e:
         logger.exception(f"Error creating ingestion job: {str(e)}")

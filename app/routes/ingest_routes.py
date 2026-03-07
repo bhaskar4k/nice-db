@@ -12,10 +12,10 @@ def ingest_data(request: IngestionRequest):
     try:
         logger.info(f"ingest_data -> start")
 
-        job_id = create_ingestion_job(request)
+        job_created = create_ingestion_job(request)
 
         logger.info(f"ingest_data -> end")
-        return SuccessDTO(message="Ingestion job created successfully", data=job_id)
+        return SuccessDTO(message="Ingestion job created successfully", data=job_created)
     
     except Exception as e:
         logger.exception(f"ingest_data -> error: {str(e)}")
@@ -31,7 +31,7 @@ def get_all_jobs():
         jobs = get_all_ingestion_jobs()
         
         logger.info(f"get_all_jobs -> end")
-        return SuccessDTO(message="Ingestion jobs retrieved successfully", data=jobs)
+        return SuccessDTO(message="Ingestion jobs retrieved successfully", data={"count": len(jobs), "jobs": jobs})
     
     except Exception as e:
         logger.exception(f"get_all_jobs -> error: {str(e)}")
