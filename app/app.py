@@ -16,8 +16,9 @@ with open(CONFIG_FILE, 'r') as f:
 
 def create_app():
     try:
+        logger.info("Creating application")
+        
         init_db()
-        logger.info("Database initialization completed")
         
         app = FastAPI(
             title=CONFIG["app"]["name"],

@@ -16,8 +16,8 @@ LOGS_DIR = BASE_DIR / CONFIG["logging"]["log_dir"]
 LOGS_DIR.mkdir(exist_ok=True)
 
 # Logger configuration
-LOG_FILE = LOGS_DIR / f"app_{datetime.now().strftime('%Y%m%d')}.log"
-EXCEPTION_LOG_FILE = LOGS_DIR / f"exceptions_{datetime.now().strftime('%Y%m%d')}.log"
+LOG_FILE = LOGS_DIR / "app.txt"
+EXCEPTION_LOG_FILE = LOGS_DIR / "exceptions.txt"
 
 # Get logging config values
 LOG_LEVEL = CONFIG["logging"]["level"]
@@ -64,12 +64,6 @@ exception_handler = logging.handlers.RotatingFileHandler(
 exception_handler.setLevel(logging.ERROR)
 exception_handler.setFormatter(exception_formatter)
 
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
-console_handler.setFormatter(detailed_formatter)
-
 # Add handlers to logger
 logger.addHandler(file_handler)
 logger.addHandler(exception_handler)
-logger.addHandler(console_handler)

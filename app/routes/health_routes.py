@@ -7,10 +7,11 @@ router = APIRouter(prefix="/health")
 @router.get("/health_check")
 def health_check():
     try:
-        logger.debug("Health check endpoint called")
+        logger.debug("health_check -> start")
         return {
             "status": "healthy"
         }
+    
     except Exception as e:
-        logger.exception(f"Error in health_check endpoint: {str(e)}")
+        logger.exception(f"health_check -> error: {str(e)}")
         raise

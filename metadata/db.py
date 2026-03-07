@@ -16,16 +16,22 @@ DB_PATH = BASE_DIR / CONFIG["database"]["path"]
 
 def get_connection():
     try:
+        logger.debug(f"Connecting to database")
+
         conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
-        logger.debug(f"Database connection established: {DB_PATH}")
+
+        logger.debug(f"Database connection established")
         return conn
+    
     except Exception as e:
-        logger.exception(f"Failed to connect to database at {DB_PATH}")
+        logger.exception(f"Failed to connect to database")
         raise
 
 
 def init_db():
     try:
+        logger.info("Initializing database")
+
         conn = get_connection()
 
         conn.execute(

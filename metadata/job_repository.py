@@ -5,6 +5,8 @@ from app.logger import logger
 
 def create_job(table_name, file_path):
     try:
+        logger.info("create_job -> start")
+
         # Generate unique job ID
         job_id = str(uuid.uuid4())
         
@@ -19,9 +21,9 @@ def create_job(table_name, file_path):
         conn.commit()
         conn.close()
         
-        logger.info(f"Job created successfully with ID: {job_id}, table: {table_name}")
+        logger.info(f"create_job -> end")
         return job_id
         
     except Exception as e:
-        logger.exception(f"Error creating job for table {table_name}: {str(e)}")
+        logger.exception(f"create_job -> error: {str(e)}")
         raise
