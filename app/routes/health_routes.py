@@ -9,7 +9,7 @@ router = APIRouter(prefix="/health")
 def health_check():
     try:
         logger.debug("health_check -> start")
-        return SuccessDTO(message="Health check successful")
+        return SuccessDTO(message="Health check successful", data="Healthy")
     
     except Exception as e:
         logger.exception(f"health_check -> error: {str(e)}")

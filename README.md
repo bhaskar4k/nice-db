@@ -1,132 +1,125 @@
-# NICE-DB: Data Ingestion Engine
+# 🚀 NICE-DB: High-Performance Data Ingestion Engine
 
-A high-performance, asynchronous data ingestion platform built with FastAPI, designed to handle large-scale data processing and storage into Delta Lake format.
+> A modern, asynchronous data ingestion platform built with **FastAPI** and **Delta Lake** for large-scale data processing and storage.
 
-## Table of Contents
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+<!-- [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) -->
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Project Structure](#project-structure)
-- [Development](#development)
+---
 
-## Overview
+## ✨ Overview
 
-NICE-DB is a robust data ingestion engine that provides a REST API for ingesting data files, processing them asynchronously, and storing results in Delta Lake format. It's designed for scalability and reliability with support for multiple data formats and comprehensive job management.
+**NICE-DB** is a robust, production-ready data ingestion engine that provides a modern REST API for:
+- Ingesting files from multiple formats (CSV, Parquet, Excel, TXT)
+- Processing data asynchronously without blocking requests
+- Storing results efficiently in Delta Lake format
+- Managing and tracking jobs with comprehensive status monitoring
 
-## Features
+Built with scalability and reliability in mind, it supports parallel processing with configurable worker threads and includes comprehensive logging and health monitoring.
 
-- **FastAPI REST API**: Modern, type-safe API endpoints for data ingestion
-- **Asynchronous Processing**: Non-blocking request handling with background worker processing
-- **Delta Lake Integration**: Efficient columnar data storage with ACID transactions
-- **Job Management**: Track ingestion jobs with status monitoring and history
-- **Health Monitoring**: Built-in health checks for service availability verification
-- **Polars Integration**: High-performance data manipulation using Polars DataFrames
-- **Scalable Architecture**: Worker threads for handling parallel ingestion tasks
+---
 
-## Architecture
+## 🎯 Features
 
-The application follows a layered architecture:
+| Feature | Description |
+|---------|-------------|
+| 🔌 **FastAPI REST API** | Type-safe, auto-documented REST endpoints for easy integration |
+| ⚡ **Asynchronous Processing** | Non-blocking request handling with background job execution |
+| 📊 **Delta Lake Integration** | Efficient columnar storage with ACID transactions |
+| 📈 **Job Management** | Complete job lifecycle tracking with status monitoring |
+| 🏥 **Health Monitoring** | Built-in health checks for service availability verification |
+| 🐻 **Polars Integration** | High-performance data manipulation with Polars DataFrames |
+| 🔄 **Scalable Architecture** | Configurable worker threads with semaphore-based concurrency control |
+| 🔐 **Thread-Safe Operations** | Mutex locks and semaphores to prevent deadlocks and race conditions |
+| 📝 **Comprehensive Logging** | File-based logging with rotation and exception tracking |
+| ⚙️ **Configurable Settings** | JSON-based configuration for easy deployment customization |
 
+---
+
+## 🏗️ Architecture
+
+NICE-DB follows a **layered microservices architecture** for maximum separation of concerns:
 ```
-┌─────────────────────────────────────────────┐
-│           FastAPI Application               │
-│    (Health & Ingestion Routes)              │
-├─────────────────────────────────────────────┤
-│        Ingestion Service Layer              │
-│    (Job creation & coordination)            │
-├─────────────────────────────────────────────┤
-│         Metadata & Storage Layers           │
-│  (Job Repository, Database, Delta Writer)   │
-├─────────────────────────────────────────────┤
-│   Worker Layer (Background Processing)      │
-│      (External worker instances)            │
-└─────────────────────────────────────────────┘
-```
-
-## Prerequisites
-
-- Python 3.8 or higher
-- pip package manager
-- SQLite3 (or compatible database)
-
-## Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd NICE-DB
-   ```
-
-2. **Create a virtual environment** (recommended)
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # On Windows
-   source venv/bin/activate  # On macOS/Linux
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Configuration
-
-### Environment Variables
-
-Create a `.env` file in the project root with the following settings:
-
-```env
-# API Settings
-API_HOST=127.0.0.1
-API_PORT=8000
-API_RELOAD=true
-
-# Database Settings
-DATABASE_URL=sqlite:///./nice_db.db
-
-# Worker Settings
-WORKER_THREADS=4
-WORKER_BATCH_SIZE=100
+┌─────────────────────────────────────────────────────────────┐
+│                   FastAPI Web Server                        │
+│            (Health Check & Ingestion Routes)                │
+├─────────────────────────────────────────────────────────────┤
+│                   Ingestion Service Layer                   │
+│               (Job Coordination & Validation)               │
+├─────────────────────────────────────────────────────────────┤
+│          Metadata & Storage Service Layers                  │
+│       (Repository, Database ORM, Delta Writer)              │
+├─────────────────────────────────────────────────────────────┤
+│           Background Worker Layer (APScheduler)             │
+│        (Cron Jobs, Threading, Concurrency Control)          │
+├─────────────────────────────────────────────────────────────┤
+│                  Data Storage Layer                         │
+│            (Delta Lake, SQLite Metadata DB)                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Database Setup
+---
 
-The application uses SQLite by default. Tables are automatically created on first run. Key tables include:
+## 📋 Prerequisites
 
-- `ingestion_jobs`: Tracks all ingestion jobs
-- `job_logs`: Stores job execution logs
+- **Python**: 3.12 or higher
+- **Package Manager**: pip
+- **Database**: SQLite3 (included with Python)
+- **OS**: Windows, macOS, or Linux
 
-## Running the Application
+---
 
-### Development Mode
+## 📦 Installation
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/bhaskar4k/nice-db.git
+cd nice-db
+```
+
+### Step 2: Create Virtual Environment (Recommended)
+
+**Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**macOS/Linux:**
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+---
+
+## 🏃 Running the Application
+
+### Start the Server
 
 ```bash
 python main.py
 ```
 
-The API will be available at `http://localhost:8000`
-
-### Production Mode
-
-```bash
-uvicorn app.app:app --host 0.0.0.0 --port 8000 --workers 4
+**Expected Output:**
 ```
-
-### Running Background Workers
-
-In a separate terminal:
-
-```bash
-python -m worker.worker
+Starting worker scheduler in background
+Scheduler started - job runs every 30 seconds
+Worker scheduler started in background
+INFO:     Started server process [13536]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
-
-## API Documentation
 
 ### API Base URL
 
@@ -134,9 +127,20 @@ python -m worker.worker
 http://localhost:8000
 ```
 
-### Endpoints
+---
 
-#### 1. Health Check
+## 📚 API Documentation
+
+### Interactive Documentation
+
+FastAPI provides automatic interactive API documentation:
+
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+### API Endpoints
+
+#### 1️⃣ Health Check
 
 **Endpoint:** `GET /health/health_check`
 
@@ -145,18 +149,14 @@ http://localhost:8000
 **Response:**
 ```json
 {
-  "status": "healthy"
+  "status": 200,
+  "success": true,
+  "message": "Health check successful",
+  "data": "Healthy"
 }
 ```
 
-**Example:**
-```bash
-curl http://localhost:8000/health/health_check
-```
-
----
-
-#### 2. Ingest Data
+#### 2️⃣ Ingest Data
 
 **Endpoint:** `POST /ingest/ingest_data`
 
@@ -166,157 +166,73 @@ curl http://localhost:8000/health/health_check
 ```json
 {
   "table": "target_table_name",
-  "path": "/path/to/data/file.parquet"
+  "path": "/path/to/data/file.csv"
 }
 ```
 
 **Response:**
 ```json
 {
-  "job_id": "unique_job_identifier"
+  "status": 200,
+  "success": true,
+  "message": "Ingestion job created successfully",
+  "data": {
+    "job_id": 12345
+  }
 }
 ```
 
-**Example:**
+---
+
+## 🔧 Development
+
+### Development Requirements
+
 ```bash
-curl -X POST http://localhost:8000/ingest/ingest_data \
-  -H "Content-Type: application/json" \
-  -d '{
-    "table": "sales_data",
-    "path": "/data/sales.parquet"
-  }'
+pip install pytest pytest-cov black flake8
 ```
 
-**Status Codes:**
-- `200 OK`: Job created successfully
-- `400 Bad Request`: Invalid request parameters
-- `500 Internal Server Error`: Server-side error
+### Code Quality
+
+**Format Code:**
+```bash
+black .
+```
+
+**Lint Code:**
+```bash
+flake8 .
+```
+
+### Running Tests
+
+```bash
+pytest tests/ -v --cov=app
+```
 
 ---
 
-### Response Codes
+## 💡 Contributing
 
-| Code | Description |
-|------|-------------|
-| 200  | Success |
-| 201  | Resource created |
-| 400  | Bad request - invalid parameters |
-| 404  | Resource not found |
-| 500  | Internal server error |
+Contributions are welcome! Please follow these steps:
 
-### Interactive API Documentation
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-FastAPI automatically generates interactive API documentation:
+---
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+## 📞 Support
+For issues, questions, or contributions, please contact the development team or create an issue in the repository.
 
-## Project Structure
+---
 
-```
-NICE-DB/
-├── main.py                      # Application entry point
-├── requirements.txt             # Python dependencies
-├── README.md                    # This file
-├── .gitignore                   # Git ignore rules
-│
-├── app/                         # FastAPI application
-│   ├── app.py                   # FastAPI app factory
-│   ├── config.py                # Configuration settings
-│   ├── models/                  # Data models
-│   │   └── job_model.py         # Job schema definitions
-│   ├── routes/                  # API route handlers
-│   │   ├── health_routes.py     # Health check endpoints
-│   │   └── ingest_routes.py     # Data ingestion endpoints
-│   └── services/                # Business logic
-│       └── ingest_service.py    # Ingestion job service
-│
-├── metadata/                    # Data persistence layer
-│   ├── db.py                    # Database connection management
-│   └── job_repository.py        # Job data access layer
-│
-├── storage/                     # Storage layer
-│   └── delta_writer.py          # Delta Lake writer implementation
-│
-├── ingestion/                   # Ingestion logic
-│   └── worker_logic.py          # Core ingestion processing
-│
-└── worker/                      # Background worker
-    └── worker.py                # Worker process entry point
-```
+<div align="center">
 
-### File Descriptions
+**Made with ❤️ by the NICE-DB Team**
 
-| File | Purpose |
-|------|---------|
-| `main.py` | Entry point that starts the uvicorn server |
-| `app/app.py` | FastAPI application factory and router configuration |
-| `app/routes/` | API endpoint definitions |
-| `app/services/ingest_service.py` | Coordinates ingestion job creation and queuing |
-| `metadata/job_repository.py` | Database operations for job management |
-| `storage/delta_writer.py` | Writes processed data to Delta Lake format |
-| `worker/worker.py` | Background worker for async job processing |
+[⬆ Back to Top](#-nicedb-high-performance-data-ingestion-engine)
 
-## Development
-
-### Setting Up for Development
-
-1. Install development dependencies:
-   ```bash
-   pip install -r requirements.txt
-   # Add development tools as needed
-   ```
-
-2. Run tests (when implemented):
-   ```bash
-   pytest tests/
-   ```
-
-### Code Style
-
-- Follow PEP 8 guidelines
-- Use type hints for function parameters and return values
-- Document public functions with docstrings
-
-### Making Changes
-
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
-
-## Dependencies
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| fastapi | 0.111.0 | Web framework |
-| uvicorn | 0.30.1 | ASGI server |
-| polars | 0.20.31 | Data manipulation |
-| deltalake | 0.18.2 | Delta Lake support |
-| pydantic | 2.7.1 | Data validation |
-| python-multipart | 0.0.9 | Form data parsing |
-
-## Troubleshooting
-
-### Application won't start
-- Verify Python version is 3.8+
-- Check all dependencies are installed: `pip install -r requirements.txt`
-- Ensure port 8000 is available
-
-### Worker process not processing jobs
-- Check worker process is running in a separate terminal
-- Verify database connection is working
-- Check application logs for error messages
-
-### Database errors
-- Ensure database file has write permissions
-- Check disk space availability
-- Verify database connection string in `.env`
-
-## License
-
-(Add your license information here)
-
-## Support
-
-For issues, questions, or contributions, please contact the development team or open an issue in the repository.
+</div>
