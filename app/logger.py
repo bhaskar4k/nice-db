@@ -1,15 +1,11 @@
 import logging
 import logging.handlers
-import json
 from pathlib import Path
-from datetime import datetime
+from .utils.config import load_config
 
 # Load configuration from JSON
 BASE_DIR = Path(__file__).resolve().parent.parent
-CONFIG_FILE = BASE_DIR / "config.json"
-
-with open(CONFIG_FILE, 'r') as f:
-    CONFIG = json.load(f)
+CONFIG = load_config()
 
 # Create logs directory if it doesn't exist
 LOGS_DIR = BASE_DIR / CONFIG["logging"]["log_dir"]

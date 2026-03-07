@@ -1,22 +1,14 @@
-import json
-from pathlib import Path
 from app.app import create_app
 from app.logger import logger
+from app.utils.config import load_config
 import uvicorn
 
 # Load configuration
-BASE_DIR = Path(__file__).resolve().parent
-CONFIG_FILE = BASE_DIR / "config.json"
-
 try:
-    with open(CONFIG_FILE, 'r') as f:
-        CONFIG = json.load(f)
+    CONFIG = load_config()
     logger.info("Configuration loaded successfully")
-except FileNotFoundError:
-    logger.exception(f"Configuration file not found at {CONFIG_FILE}")
-    raise
 except Exception as e:
-    logger.exception(f"Failed to load configuration from {CONFIG_FILE}")
+    logger.exception("Failed to load configuration")
     raise
 
 try:
