@@ -1,0 +1,21 @@
+{
+  "app": {
+    "name": "NICE-DB",
+    "version": "1.0.0",
+    "debug": true
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "metadata.db"
+  },
+  "logging": {
+    "level": "DEBUG",
+    "log_dir": "logs",
+    "max_bytes": 10485760,
+    "backup_count": 5
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8000
+  }
+}
