@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.ingest_service import create_ingestion_job, get_all_ingestion_jobs
+from app.services.ingest_service import create_ingestion_job, get_all_ingestion_jobs, get_the_first_pending_ingestion_job
 from app.models.job_model import IngestionRequest
 from app.logger import logger
 from dto.dto_obj import SuccessDTO, ErrorDTO
@@ -36,3 +36,19 @@ def get_all_jobs():
     except Exception as e:
         logger.exception(f"get_all_jobs -> error: {str(e)}")
         return ErrorDTO(message="Failed to retrieve ingestion jobs")
+    
+
+
+@router.get("/get_first_pending_job")
+def get_first_pending_job():
+    try:
+        logger.info(f"get_first_pending_job -> start")
+        
+        job = get_the_first_pending_ingestion_job()
+        
+        logger.info(f"get_first_pending_job -> end")
+        return SuccessDTO(message="First pending ingestion job retrieved successfully", data=job)
+    
+    except Exception as e:
+        logger.exception(f"get_first_pending_job -> error: {str(e)}")
+        return ErrorDTO(message="Failed to retrieve first pending ingestion job")
