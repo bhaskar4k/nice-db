@@ -40,9 +40,10 @@ def init_db():
                 job_id TEXT PRIMARY KEY,
                 table_name TEXT,
                 file_path TEXT,
-                status TEXT,
+                status INTEGER DEFAULT 0,
                 rows_processed INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                processed_at TIMESTAMP DEFAULT NULL
             )
         """
         )

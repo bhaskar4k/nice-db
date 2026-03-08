@@ -1,4 +1,4 @@
-from storage.delta_writer import write_delta
+from ingestion.delta_writer import write_delta
 import polars as pl
 
 

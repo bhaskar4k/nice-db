@@ -13,8 +13,8 @@ def create(payload: IngestionRequest):
         
         query = """
             INSERT INTO ingestion_jobs
-            (job_id, table_name, file_path, status)
-            VALUES (?, ?, ?, 'pending')
+            (job_id, table_name, file_path)
+            VALUES (?, ?, ?)
         """
 
         conn = get_connection()
