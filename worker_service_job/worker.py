@@ -6,7 +6,8 @@ from app.logger.logger import logger
 from ingestion.worker_logic import process_job
 import atexit
 from app.utils.config import load_config
-from repository.job_repository import get_first_pending_job
+from repository.job_repository import get_first_pending_job, update_job_status
+from app.enum.master_enum import JobStatus
 
 CONFIG = load_config()
 
@@ -38,7 +39,7 @@ def safe_process_job(job):
                 
                 active_jobs.add(job_id)
                 logger.info(f"Starting job processing: {job_id}")
-            
+
             try:
                 # Process job outside the lock to avoid holding it too long
                 process_job(job)

@@ -81,3 +81,25 @@ def get_first_pending_job():
     except Exception as e:
         logger.exception(f"get_first_pending_job -> error: {str(e)}")
         raise
+
+
+
+# Update job status
+def update_job_status(job_id, new_status):
+    try:
+        logger.info("update_job_status -> start")
+
+        query = "UPDATE ingestion_jobs SET status = ? WHERE job_id = ?"
+
+        conn = get_connection()
+        cursor = conn.execute(query, (new_status, job_id))
+        conn.commit()
+        conn.close()
+
+        logger.info("update_job_status -> end")
+
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        logger.exception(f"update_job_status -> error: {str(e)}")
+        raise

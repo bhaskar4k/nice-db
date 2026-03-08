@@ -1,10 +1,28 @@
 from ingestion.delta_writer import write_delta
 import polars as pl
+from repository.job_repository import update_job_status
+from app.enum.master_enum import JobStatus
+from app.logger.logger import logger
 
 
 def process_job(job):
-    val = 1
-    # df = pl.scan_csv(job.file_path)
+    try:
+        logger.info("process_job -> start")
+        # Extract job_id
+        job_id = job.get("job_id") if isinstance(job, dict) else job.job_id
 
-    # for batch in df.collect(streaming=True):
-    #     write_delta(batch)
+        # Update job status to IN_PROGRESS
+        update_job_status(job_id, JobStatus.IN_PROGRESS.value)
+
+
+        # Update job status to COMPLETED
+        update_job_status(job_id, JobStatus.COMPLETED.value)
+        logger.info("process_job -> end")
+
+    except Exception as e:
+        # Update job status to FAILED
+        job_id = job.get("job_id") if isinstance(job, dict) else job.job_id
+        update_job_status(job_id, JobStatus.FAILED.value)
+
+        logger.exception(f"process_job -> error: {str(e)}")
+        raise
