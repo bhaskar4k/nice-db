@@ -1,7 +1,7 @@
 import logging
 import logging.handlers
 from pathlib import Path
-from .utils.config import load_config
+from ..utils.config import load_config
 
 # Load configuration from JSON
 BASE_DIR = Path(__file__).resolve().parent.parent

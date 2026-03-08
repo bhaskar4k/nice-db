@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app.services.ingest_service import create_ingestion_job, get_all_ingestion_jobs, get_the_first_pending_ingestion_job
 from app.models.job_model import IngestionRequest
-from app.logger import logger
+from app.logger.logger import logger
 from dto.dto_obj import SuccessDTO, ErrorDTO
 
 router = APIRouter(prefix="/ingest")

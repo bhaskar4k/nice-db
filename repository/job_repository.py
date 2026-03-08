@@ -1,7 +1,7 @@
 from repository.db import get_connection
 import uuid
 from app.models.job_model import IngestionRequest
-from app.logger import logger
+from app.logger.logger import logger
 from app.enum.master_enum import JobStatus
 
 # Create a new ingestion job

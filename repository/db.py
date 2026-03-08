@@ -1,7 +1,7 @@
 import sqlite3
 import json
 from pathlib import Path
-from app.logger import logger
+from app.logger.logger import logger
 
 
 # Load config from JSON

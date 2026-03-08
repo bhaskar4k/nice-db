@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from app.routes.ingest_routes import router as ingest_router
 from app.routes.health_routes import router as health_router
 from repository.db import init_db
-from app.logger import logger
+from app.logger.logger import logger
 
 # Load configuration
 BASE_DIR = Path(__file__).resolve().parent.parent

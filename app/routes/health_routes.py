@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.logger import logger
+from app.logger.logger import logger
 from dto.dto_obj import SuccessDTO, ErrorDTO
 
 router = APIRouter(prefix="/health")

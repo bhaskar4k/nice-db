@@ -2,7 +2,7 @@ import threading
 from threading import Lock, Semaphore
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
-from app.logger import logger
+from app.logger.logger import logger
 from ingestion.worker_logic import process_job, fetch_pending_job
 import atexit
 from app.utils.config import load_config

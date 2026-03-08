@@ -1,6 +1,6 @@
 from repository.job_repository import create, get_all, get_first_pending_job
 from app.models.job_model import IngestionRequest
-from app.logger import logger
+from app.logger.logger import logger
 
 
 # Create a new ingestion job
