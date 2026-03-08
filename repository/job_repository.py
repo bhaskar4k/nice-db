@@ -103,3 +103,25 @@ def update_job_status(job_id, new_status):
     except Exception as e:
         logger.exception(f"update_job_status -> error: {str(e)}")
         raise
+
+
+
+# Update job rows processed
+def update_job_rows_processed(job_id, new_row_processed):
+    try:
+        logger.info("update_job_rows_processed -> start")
+
+        query = "UPDATE ingestion_jobs SET rows_processed = ? WHERE job_id = ?"
+
+        conn = get_connection()
+        cursor = conn.execute(query, (new_row_processed, job_id))
+        conn.commit()
+        conn.close()
+
+        logger.info("update_job_rows_processed -> end")
+
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        logger.exception(f"update_job_rows_processed -> error: {str(e)}")
+        raise

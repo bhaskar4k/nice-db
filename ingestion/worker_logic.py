@@ -1,6 +1,6 @@
 from ingestion.delta_writer import write_delta
 import polars as pl
-from repository.job_repository import update_job_status
+from repository.job_repository import update_job_status, update_job_rows_processed
 from app.enum.master_enum import JobStatus
 from app.logger.logger import logger
 
