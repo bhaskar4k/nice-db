@@ -3,9 +3,10 @@ from threading import Lock, Semaphore
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from app.logger.logger import logger
-from ingestion.worker_logic import process_job, fetch_pending_job
+from ingestion.worker_logic import process_job
 import atexit
 from app.utils.config import load_config
+from repository.job_repository import get_first_pending_job
 
 CONFIG = load_config()
 
@@ -21,9 +22,12 @@ scheduler_lock = Lock()
 active_jobs = set()
 
 
-def safe_process_job(job_id):
+def safe_process_job(job):
     """Process a job with thread-safe locking and semaphore"""
     try:
+        # Extract job_id for logging and tracking
+        job_id = job.get("job_id") if isinstance(job, dict) else job.job_id
+
         # Acquire semaphore - blocks if max concurrent jobs reached
         with max_concurrent_jobs:
             # Acquire lock for critical section
@@ -37,7 +41,7 @@ def safe_process_job(job_id):
             
             try:
                 # Process job outside the lock to avoid holding it too long
-                process_job(job_id)
+                process_job(job)
                 
                 # Update completion status under lock
                 with job_lock:
@@ -59,15 +63,15 @@ def cron_job():
         with scheduler_lock:
             logger.debug("Cron job triggered - fetching pending jobs")
             
-            job = fetch_pending_job()
-            
+            job = get_first_pending_job()
+
             if job:
-                job_id = job.get("id") if isinstance(job, dict) else job.id
-                
+                job_id = job.get("job_id") if isinstance(job, dict) else job.job_id
+
                 # Process job in a separate thread to avoid blocking scheduler
                 worker_thread = threading.Thread(
                     target=safe_process_job,
-                    args=(job_id,),
+                    args=(job,),
                     daemon=False,
                     name=f"worker-thread-{job_id}"
                 )

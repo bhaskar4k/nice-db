@@ -4,7 +4,7 @@ from pathlib import Path
 from ..utils.config import load_config
 
 # Load configuration from JSON
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CONFIG = load_config()
 
 # Create logs directory if it doesn't exist
